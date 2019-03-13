@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const fs = require('fs');
 const app = express();
 const NutritionApi = require('./nutrition_api');
+const session = require('express-session');
 
 const projectRoot = path.join(__dirname, '../..');
 const secretsPath = path.join(projectRoot, 'secrets.json');
@@ -22,12 +23,26 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+app.use(session({
+    secret: 'nutrition-secret'
+}));
+
 app.get('/search', (req, res) => {
-    respondWithMustache(res, 'search.mustache', {'query': 'cheetos'});
+    let previousSearch = null;
+    if (req.session.searchHistory) {
+        previousSearch = req.session.searchHistory[req.session.searchHistory.length - 1];
+    }
+
+    respondWithMustache(res, 'search.mustache', {'previousSearch': previousSearch});
 });
 
 app.post('/search', (req, res) => {
     let searchQuery = req.body.query;
+    if (req.session.searchHistory) {
+        req.session.searchHistory.push(searchQuery)
+    } else {
+        req.session.searchHistory = [searchQuery];
+    }
 
     let nutrition = new NutritionApi(secretsPath);
     nutrition.search(searchQuery, (error, results) => {

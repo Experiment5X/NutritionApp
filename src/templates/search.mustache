@@ -6,6 +6,10 @@
             <button type="submit">Search</button>
         </form>
 
+        {{#previousSearch}}
+            <p>Last searched for: {{previousSearch}}</p>
+        {{/previousSearch}}
+
         <ul>
             {{#results}}
                 <li>{{name}}</li>

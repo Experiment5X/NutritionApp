@@ -6,6 +6,7 @@
     "author": "Adam and Kyle",
     "dependencies": {
         "express": "^4.16.3",
+        "express-session": "^1.15.6",
         "mustache": "^3.0.1",
         "request": "^2.88.0"
     }
